@@ -1,223 +1,1556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Automation Hygiene Dashboard - Premium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Add this style block after your existing font links -->
-    <style>
-      :root {
-        --primary-light: #f5f5f5;
-        --secondary-light: #eeeeee;
-        --text-black: #000000;
-        --accent-blue: #1e90ff;
-        --accent-orange: #ff6b35;
-        --hover-effect: 0 2px 8px rgba(0, 0, 0, 0.1);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automation Hygiene Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5c6df7;
+      --primary-light: #7d8df9;
+      --secondary: #845ef7;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --info: #2196f3;
+      --light: #f8f9ff;
+      --dark: #1e1e2f;
+      --gray: #6c757d;
+      --light-gray: #eef2f7;
+      --card-bg: #ffffff;
+      --border-radius: 16px;
+      --shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+      --sidebar-width: 250px;
+      --sidebar-collapsed: 70px;
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: var(--transition);
+      z-index: 100;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+    
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed);
+    }
+    
+    .sidebar-header {
+      padding: 25px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      font-size: 1.8rem;
+    }
+    
+    .logo-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    
+    .sidebar.collapsed .logo-text {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .toggle-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+    
+    .menu-title {
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 15px 20px 5px;
+      opacity: 0.7;
+      transition: var(--transition);
+    }
+    
+    .sidebar.collapsed .menu-title {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .menu-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .menu-item.active {
+      background: rgba(255,255,255,0.15);
+    }
+    
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: white;
+    }
+    
+    .menu-icon {
+      font-size: 1.1rem;
+      min-width: 24px;
+      text-align: center;
+    }
+    
+    .menu-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .sidebar.collapsed .menu-text {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    
+    .sub-menu {
+      padding-left: 40px;
+      max-height: 0;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .menu-item.expanded .sub-menu {
+      max-height: 300px;
+    }
+    
+    .sub-item {
+      padding: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .sub-item:hover {
+      opacity: 1;
+    }
+    
+    .sub-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 30px;
+      transition: var(--transition);
+    }
+    
+    .sidebar.collapsed ~ .main-content {
+      margin-left: var(--sidebar-collapsed);
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .dashboard-header {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px 25px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(120deg, rgba(92, 109, 247, 0.03), rgba(132, 94, 247, 0.03));
+    }
+    
+    .dashboard-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+    
+    .header-content h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    
+    .header-content p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      max-width: 600px;
+      margin-bottom: 0;
+    }
+    
+    .btn-get-started {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(92, 109, 247, 0.3);
+    }
+    
+    .btn-get-started:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(92, 109, 247, 0.4);
+    }
+    
+    /* Main Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-image: linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(149, 157, 165, 0.2);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(92, 109, 247, 0.1);
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    
+    /* Metrics */
+    .metric-container {
+      margin-top: auto;
+    }
+    
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 8px 0;
+    }
+    
+    .metric-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .trend {
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+    
+    .trend.up {
+      color: var(--success);
+    }
+    
+    .trend.down {
+      color: var(--danger);
+    }
+    
+    /* Progress Bars */
+    .progress-container {
+      margin-top: 12px;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--light-gray);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    /* Charts */
+    .chart-container {
+      height: 100px;
+      border-radius: 12px;
+      margin-top: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      padding: 0 5px;
+    }
+    
+    .bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--primary), var(--primary-light));
+      margin: 0 3px;
+      border-radius: 3px 3px 0 0;
+      position: relative;
+    }
+    
+    .bar-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      color: var(--gray);
+    }
+    
+    .line-chart {
+      position: relative;
+      height: 100%;
+    }
+    
+    .chart-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+    }
+    
+    .grid-line {
+      border-right: 1px dashed rgba(108, 117, 125, 0.15);
+    }
+    
+    .grid-line:last-child {
+      border-right: none;
+    }
+    
+    .chart-line {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 80%;
+      display: flex;
+      align-items: flex-end;
+    }
+    
+    .chart-point {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      transform: translate(-50%, 50%);
+    }
+    
+    /* Highlights */
+    .highlight-container {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    
+    .highlight-title {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 3px;
+      font-size: 0.95rem;
+    }
+    
+    .highlight-text {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    
+    /* Tags */
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    
+    .tag {
+      background: var(--light);
+      color: var(--dark);
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+    }
+    
+    /* Section Titles */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 25px 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--light-gray);
+      grid-column: span 12;
+    }
+    
+    /* Grid Spans */
+    .span-4 {
+      grid-column: span 4;
+    }
+    
+    .span-6 {
+      grid-column: span 6;
+    }
+    
+    .span-8 {
+      grid-column: span 8;
+    }
+    
+    .span-12 {
+      grid-column: span 12;
+    }
+    
+    /* Circular Gauge */
+    .gauge-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto;
+    }
+    
+    .gauge {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .gauge-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--success) 0% 25%,
+        var(--warning) 25% 75%,
+        var(--danger) 75% 100%
+      );
+      mask: radial-gradient(white 55%, transparent 56%);
+      -webkit-mask: radial-gradient(white 55%, transparent 56%);
+    }
+    
+    .gauge-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    
+    .gauge-value {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    
+    .gauge-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    
+    .gauge-needle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 3px;
+      height: 50%;
+      background: var(--dark);
+      transform-origin: bottom center;
+      z-index: 5;
+      border-radius: 3px 3px 0 0;
+      transform: translateX(-50%) rotate(0deg);
+      transition: transform 1s ease;
+    }
+    
+    .gauge-needle::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      width: 15px;
+      height: 15px;
+      background: var(--dark);
+      border-radius: 50%;
+    }
+    
+    /* Task by Assignee */
+    .assignee-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    
+    .assignee-card {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .assignee-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .assignee-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 0 auto 8px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .assignee-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .assignee-metric {
+      font-size: 0.8rem;
+      color: var(--gray);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .assignee-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 0 0 10px 10px;
+      transition: width 0.5s ease;
+      width: 0;
+    }
+    
+    /* Active Tasks */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    
+    .task-item {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .task-item:hover {
+      transform: translateX(3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .task-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(92, 109, 247, 0.1);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .task-content {
+      flex-grow: 1;
+    }
+    
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+    
+    .task-progress {
+      height: 5px;
+      background: var(--light-gray);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    
+    .task-progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    
+    .task-status {
+      background: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+    
+    /* Status Colors */
+    .status-review { background: #ff9800; }
+    .status-progress { background: #2196f3; }
+    .status-done { background: #4caf50; }
+    .status-new { background: #9c27b0; }
+    
+    /* Completion Status */
+    .completion-card {
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+    
+    .completion-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 12px 0;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .completion-label {
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+    
+    .completion-sub {
+      font-size: 0.85rem;
+      color: var(--dark);
+      font-weight: 500;
+    }
+    
+    /* MTTR Trend */
+    .trend-chart {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .trend-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80%;
+      background: linear-gradient(to top, rgba(92, 109, 247, 0.1), transparent);
+      clip-path: polygon(0% 100%, 0% 100%, 100% 100%, 100% 100%);
+      transition: clip-path 1s ease;
+    }
+    
+    .trend-point {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      transform: translate(-50%, 50%);
+      z-index: 2;
+    }
+    
+    .trend-path {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80%;
+      stroke: var(--primary);
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      transition: stroke-dashoffset 1.5s ease;
+    }
+    
+    .chart-labels {
+      position: absolute;
+      bottom: -25px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--gray);
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(6, 1fr);
       }
-
-      body {
-        background-color: var(--primary-light);
-        color: var(--text-black);
+      
+      .span-4, .span-6, .span-8, .span-12 {
+        grid-column: span 6;
       }
-
-      .nav-bar {
-        background: var(--secondary-light);
+      
+      .section-title {
+        grid-column: span 6;
       }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--accent-blue), #0066cc);
-        color: white;
+    }
+    
+    @media (max-width: 992px) {
+      .sidebar {
+        width: var(--sidebar-collapsed);
       }
-
-      .card {
-        background: white;
-        box-shadow: var(--hover-effect);
+      
+      .sidebar .menu-text,
+      .sidebar .logo-text,
+      .sidebar .menu-title {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
       }
-
-      a:hover {
-        color: var(--accent-orange);
+      
+      .main-content {
+        margin-left: var(--sidebar-collapsed);
       }
-    </style>
+      
+      .sidebar.collapsed {
+        width: var(--sidebar-width);
+      }
+      
+      .sidebar.collapsed .menu-text,
+      .sidebar.collapsed .logo-text,
+      .sidebar.collapsed .menu-title {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+      }
+      
+      .sidebar.collapsed ~ .main-content {
+        margin-left: var(--sidebar-width);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(1, 1fr);
+      }
+      
+      .span-4, .span-6, .span-8, .span-12 {
+        grid-column: span 1;
+      }
+      
+      .section-title {
+        grid-column: span 1;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.collapsed {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .sidebar.collapsed ~ .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen">
-<header class="backdrop-blur bg-gray-900/80 py-6 px-10 flex justify-between items-center shadow-2xl sticky top-0 z-50">
-    <h1 class="text-3xl font-extrabold tracking-wide text-cyan-400">CygNet B2C Monitoring</h1>
-    <nav class="space-x-6 text-sm text-white">
-        <a href="#" class="hover:text-cyan-400">NOC Lead</a>
-        <a href="#" class="hover:text-cyan-400">NOC Head</a>
-        <a href="#" class="hover:text-cyan-400">NOC L1 Desk</a>
-        <a href="#" class="text-cyan-400 font-bold">Automation Hygiene Dashboard</a>
-        <a href="#" class="hover:text-cyan-400">Inventory Hygiene Dashboard</a>
-    </nav>
-</header>
-
-<main class="p-6 md:p-16 space-y-20">
-    <!-- Hero Intro -->
-    <section class="text-center" data-aos="fade-down">
-        <h2 class="text-4xl font-extrabold mb-4 section-title glow">🚀 Automation Hygiene Dashboard</h2>
-        <p class="text-lg text-gray-300">Real-time intelligence to track automation success, human intervention, and time impact</p>
-    </section>
-
-    <!-- Section 1 -->
-    <div class="divider" data-aos="zoom-in"></div>
-    <section data-aos="fade-up">
-        <h2 class="section-title mb-6 text-center">📊 Automation Hygiene Overview</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div class="card text-center">
-                <p class="text-sm text-gray-300">Automation Efficiency</p>
-                <h3 class="text-4xl font-bold text-cyan-300 glow">85%</h3>
-                <p class="text-green-400 text-sm">▲ +2%</p>
-            </div>
-            <div class="card text-center">
-                <p class="text-sm text-gray-300">RCA Efficiency</p>
-                <h3 class="text-4xl font-bold text-cyan-300 glow">92%</h3>
-                <p class="text-green-400 text-sm">▲ +3%</p>
-            </div>
-            <div class="card text-center">
-                <p class="text-sm text-gray-300">TTs with Auto RCA</p>
-                <h3 class="text-4xl font-bold text-cyan-300">68%</h3>
-            </div>
-            <div class="card text-center">
-                <p class="text-sm text-gray-300">Auto RCA Acceptance</p>
-                <h3 class="text-4xl font-bold text-cyan-300">90%</h3>
-            </div>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-chart-network"></i></div>
+        <div class="logo-text">AutoInsight</div>
+      </div>
+      <button class="toggle-btn">
+        <i class="fas fa-angle-left"></i>
+      </button>
+    </div>
+    
+    <div class="sidebar-menu">
+      <div class="menu-title">Main</div>
+      <div class="menu-item active">
+        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <div class="menu-text">Dashboard</div>
+      </div>
+      
+      <div class="menu-title">Modules</div>
+      <div class="menu-item">
+        <div class="menu-icon"><i class="fas fa-boxes"></i></div>
+        <div class="menu-text">Inventory</div>
+      </div>
+      
+      <div class="menu-item expanded">
+        <div class="menu-icon"><i class="fas fa-binoculars"></i></div>
+        <div class="menu-text">Discovery</div>
+        <div class="sub-menu">
+          <div class="sub-item">Preliminary</div>
         </div>
-    </section>
-
-    <!-- Section 2 -->
-    <div class="divider" data-aos="zoom-in"></div>
-    <section data-aos="fade-up">
-        <h2 class="section-title mb-6 text-center">📈 Efficiency Over Time</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="card">
-                <h4 class="text-lg mb-4 text-white">Automation Efficiency</h4>
-                <canvas id="efficiencyChart"></canvas>
-            </div>
-            <div class="card">
-                <h4 class="text-lg mb-4 text-white">RCA Efficiency</h4>
-                <canvas id="rcaChart"></canvas>
-            </div>
+      </div>
+      
+      <div class="menu-item expanded">
+        <div class="menu-icon"><i class="fas fa-bell"></i></div>
+        <div class="menu-text">Alarm</div>
+        <div class="sub-menu">
+          <div class="sub-item">Live</div>
+          <div class="sub-item">History</div>
         </div>
-    </section>
-
-    <!-- Inserted Section 3 and 4 including enhancement -->
-    <!-- BEGIN: Inserted Content -->
-    <!-- ... existing inserted content ... -->
-    <!-- Section 3 -->
-    <div class="divider" data-aos="zoom-in"></div>
-    <section data-aos="fade-up">
-        <h2 class="section-title mb-6 text-center">🕒 MTTR & RCA Analysis</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="card">
-                <h4 class="text-lg mb-4 text-white">Auto vs Manual RCA</h4>
-                <canvas id="rcaCompare"></canvas>
-            </div>
-            <div class="card">
-                <h4 class="text-lg mb-4 text-white">Automation Impact on MTTR</h4>
-                <canvas id="mttrChart"></canvas>
-            </div>
+      </div>
+      
+      <div class="menu-item expanded">
+        <div class="menu-icon"><i class="fas fa-search"></i></div>
+        <div class="menu-text">RCA</div>
+        <div class="sub-menu">
+          <div class="sub-item">Live</div>
+          <div class="sub-item">History</div>
         </div>
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="card text-center">
-                <p class="text-sm">Avg. MTTR (Automated)</p>
-                <h3 class="text-4xl font-extrabold text-green-400 glow">4 hours</h3>
-            </div>
-            <div class="card text-center">
-                <p class="text-sm">Avg. MTTR (Manual)</p>
-                <h3 class="text-4xl font-extrabold text-red-400 glow">8 hours</h3>
-            </div>
-            <div class="card text-center">
-                <p class="text-sm">Total Time Saved</p>
-                <h3 class="text-4xl font-extrabold text-cyan-300 glow">120 hours</h3>
-            </div>
+      </div>
+      
+      <div class="menu-item">
+        <div class="menu-icon"><i class="fas fa-ticket-alt"></i></div>
+        <div class="menu-text">Tickets</div>
+      </div>
+    </div>
+    
+    <div class="sidebar-menu" style="margin-top: 20px;">
+      <div class="menu-title">Settings</div>
+      <div class="menu-item">
+        <div class="menu-icon"><i class="fas fa-cog"></i></div>
+        <div class="menu-text">Settings</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon"><i class="fas fa-user-circle"></i></div>
+        <div class="menu-text">Profile</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="menu-text">Logout</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div class="header-content">
+          <h1>Automation Hygiene Dashboard</h1>
+          <p>Track automation efficiency, RCA insights, MTTR trends and intervention metrics</p>
         </div>
-    </section>
-
-    <!-- Section 4 -->
-    <div class="divider" data-aos="zoom-in"></div>
-    <section data-aos="fade-up" class="relative">
-        <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-lg animate-pulse">
-            Human Intelligence Layer
+        <button class="btn-get-started">
+          <i class="fas fa-rocket"></i> Get Started
+        </button>
+      </div>
+      
+      <div class="dashboard-grid">
+        <!-- Key Metrics -->
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Automation Efficiency</div>
+            <div class="card-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="gauge-container">
+              <div class="gauge">
+                <div class="gauge-background"></div>
+                <div class="gauge-needle" id="efficiency-needle"></div>
+                <div class="gauge-center">
+                  <div class="gauge-value">85%</div>
+                  <div class="gauge-label">Efficiency</div>
+                </div>
+              </div>
+            </div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> +2% in last 7 days
+            </div>
+          </div>
         </div>
-        <h2 class="section-title mb-6 text-center pt-10">🧠 Human-in-the-Loop Metrics</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="card">
-                <p class="text-sm text-gray-300 mb-2">Total Interventions</p>
-                <h3 class="text-4xl font-bold text-cyan-300 glow">50</h3>
+        
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">RCA Efficiency</div>
+            <div class="card-icon">
+              <i class="fas fa-chart-line"></i>
             </div>
-            <div class="card">
-                <p class="text-sm text-gray-300 mb-2">Override Rate</p>
-                <h3 class="text-4xl font-bold text-cyan-300 glow">5%</h3>
+          </div>
+          <div class="metric-container">
+            <div class="gauge-container">
+              <div class="gauge">
+                <div class="gauge-background"></div>
+                <div class="gauge-needle" id="rca-needle"></div>
+                <div class="gauge-center">
+                  <div class="gauge-value">92%</div>
+                  <div class="gauge-label">RCA</div>
+                </div>
+              </div>
             </div>
-            <div class="card">
-                <p class="text-sm text-gray-300 mb-2">Common Intervention Areas</p>
-                <h3 class="text-xl font-bold text-cyan-300">Area A, Area B</h3>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> +3% in last 7 days
             </div>
+          </div>
         </div>
-    </section>
-    <!-- END: Inserted Content -->
-</main>
-
-<script>
-    AOS.init();
-    new Chart(document.getElementById('efficiencyChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-        datasets: [{
-          label: 'Efficiency %',
-          data: [60, 70, 85, 90],
-          backgroundColor: '#38bdf8'
-        }]
+        
+        <!-- Task by Assignee -->
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Task by Assignee</div>
+            <div class="card-icon">
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+          <div class="assignee-grid">
+            <div class="assignee-card">
+              <div class="assignee-avatar">AM</div>
+              <div class="assignee-name">Alex Morgan</div>
+              <div class="assignee-metric">12 Tasks</div>
+              <div class="assignee-progress" style="width: 75%;"></div>
+            </div>
+            <div class="assignee-card">
+              <div class="assignee-avatar">AC</div>
+              <div class="assignee-name">Adam Chen</div>
+              <div class="assignee-metric">8 Tasks</div>
+              <div class="assignee-progress" style="width: 50%;"></div>
+            </div>
+            <div class="assignee-card">
+              <div class="assignee-avatar">LT</div>
+              <div class="assignee-name">Lisa Turner</div>
+              <div class="assignee-metric">15 Tasks</div>
+              <div class="assignee-progress" style="width: 90%;"></div>
+            </div>
+            <div class="assignee-card">
+              <div class="assignee-avatar">PR</div>
+              <div class="assignee-name">Priya Rao</div>
+              <div class="assignee-metric">7 Tasks</div>
+              <div class="assignee-progress" style="width: 40%;"></div>
+            </div>
+            <div class="assignee-card">
+              <div class="assignee-avatar">RJ</div>
+              <div class="assignee-name">Robert James</div>
+              <div class="assignee-metric">10 Tasks</div>
+              <div class="assignee-progress" style="width: 65%;"></div>
+            </div>
+            <div class="assignee-card">
+              <div class="assignee-avatar">ST</div>
+              <div class="assignee-name">Sarah Thompson</div>
+              <div class="assignee-metric">9 Tasks</div>
+              <div class="assignee-progress" style="width: 60%;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Completion Status -->
+        <div class="card span-6">
+          <div class="completion-card">
+            <div class="card-title">All Task by Completion Status</div>
+            <div class="completion-value">121 / 143</div>
+            <div class="completion-label">Tasks completed</div>
+            <div class="completion-sub">85% Completion Rate</div>
+            <div class="progress-container" style="max-width: 250px; margin: 15px auto;">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Automation Efficiency Over Time</div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> +12% in last 4 weeks
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart">
+              <div class="bar" style="height: 40%"><div class="bar-label">W1</div></div>
+              <div class="bar" style="height: 55%"><div class="bar-label">W2</div></div>
+              <div class="bar" style="height: 65%"><div class="bar-label">W3</div></div>
+              <div class="bar" style="height: 75%"><div class="bar-label">W4</div></div>
+              <div class="bar" style="height: 85%"><div class="bar-label">Now</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Automation RCA Efficiency Over Time</div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> +16% in last 4 weeks
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart">
+              <div class="bar" style="height: 45%"><div class="bar-label">W1</div></div>
+              <div class="bar" style="height: 60%"><div class="bar-label">W2</div></div>
+              <div class="bar" style="height: 75%"><div class="bar-label">W3</div></div>
+              <div class="bar" style="height: 85%"><div class="bar-label">W4</div></div>
+              <div class="bar" style="height: 92%"><div class="bar-label">Now</div></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section Title -->
+        <h2 class="section-title">Auto RCA Efficacy</h2>
+        
+        <!-- Auto RCA Metrics -->
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">TTs with Auto RCA</div>
+            <div class="card-icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">68%</div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 68%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Auto RCA Acceptance Rate</div>
+            <div class="card-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">90%</div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Time Saved with Auto RCA</div>
+            <div class="card-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">2 hours</div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> Per incident
+            </div>
+          </div>
+        </div>
+        
+        <!-- Comparison Card -->
+        <div class="card span-12">
+          <div class="card-header">
+            <div class="card-title">Auto vs. Manual RCA Comparison</div>
+            <div class="card-icon">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+          </div>
+          
+          <div class="highlight-container">
+            <div class="highlight-title">Auto RCA</div>
+            <div class="highlight-text">Significantly higher efficiency (92% acceptance)</div>
+          </div>
+          
+          <div class="highlight-container">
+            <div class="highlight-title">Manual RCA</div>
+            <div class="highlight-text">Lower performance (68% acceptance)</div>
+          </div>
+        </div>
+        
+        <!-- Section Title -->
+        <h2 class="section-title">Automation Impact on MTTR</h2>
+        
+        <!-- MTTR Metrics -->
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Avg. MTTR (Automated)</div>
+            <div class="card-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">4 hours</div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> 50% faster
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Avg. MTTR (Manual)</div>
+            <div class="card-icon">
+              <i class="fas fa-user-cog"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">8 hours</div>
+            <div class="trend down">
+              <i class="fas fa-arrow-down"></i> Slower resolution
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Total Time Saved</div>
+            <div class="card-icon">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">120 hours</div>
+            <div class="trend up">
+              <i class="fas fa-calendar"></i> Last 30 days
+            </div>
+          </div>
+        </div>
+        
+        <!-- MTTR Trends -->
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Auto MTTR Trend</div>
+            <div class="trend down">
+              <i class="fas fa-arrow-down"></i> Decreasing trend
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="trend-chart">
+              <div class="trend-line" id="auto-trend"></div>
+              <svg class="trend-path" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,80 L25,65 L50,50 L75,35 L100,20"></path>
+              </svg>
+              <div class="trend-point" style="left: 0%; bottom: 80%;"></div>
+              <div class="trend-point" style="left: 25%; bottom: 65%;"></div>
+              <div class="trend-point" style="left: 50%; bottom: 50%;"></div>
+              <div class="trend-point" style="left: 75%; bottom: 35%;"></div>
+              <div class="trend-point" style="left: 100%; bottom: 20%;"></div>
+              <div class="chart-labels">
+                <span>W1</span>
+                <span>W2</span>
+                <span>W3</span>
+                <span>W4</span>
+                <span>Now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-6">
+          <div class="card-header">
+            <div class="card-title">Manual MTTR Trend</div>
+            <div class="trend up">
+              <i class="fas fa-arrow-up"></i> Increasing trend
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="trend-chart">
+              <div class="trend-line" id="manual-trend" style="background: linear-gradient(to top, rgba(244, 67, 54, 0.1), transparent);"></div>
+              <svg class="trend-path" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,20 L25,35 L50,50 L75,65 L100,80" stroke="#f44336"></path>
+              </svg>
+              <div class="trend-point" style="left: 0%; bottom: 20%; background: #f44336;"></div>
+              <div class="trend-point" style="left: 25%; bottom: 35%; background: #f44336;"></div>
+              <div class="trend-point" style="left: 50%; bottom: 50%; background: #f44336;"></div>
+              <div class="trend-point" style="left: 75%; bottom: 65%; background: #f44336;"></div>
+              <div class="trend-point" style="left: 100%; bottom: 80%; background: #f44336;"></div>
+              <div class="chart-labels">
+                <span>W1</span>
+                <span>W2</span>
+                <span>W3</span>
+                <span>W4</span>
+                <span>Now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Active Tasks -->
+        <div class="card span-12">
+          <div class="card-header">
+            <div class="card-title">Active Tasks</div>
+            <div class="card-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+          </div>
+          
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-icon">
+                <i class="fas fa-paint-brush"></i>
+              </div>
+              <div class="task-content">
+                <div class="task-title">Website Redesign</div>
+                <div class="task-progress">
+                  <div class="task-progress-bar" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="task-status status-progress">In Progress</div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-icon">
+                <i class="fab fa-google"></i>
+              </div>
+              <div class="task-content">
+                <div class="task-title">Google Analytics Integration</div>
+                <div class="task-progress">
+                  <div class="task-progress-bar" style="width: 40%"></div>
+                </div>
+              </div>
+              <div class="task-status status-review">Review</div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="task-content">
+                <div class="task-title">Mobile App UI Design</div>
+                <div class="task-progress">
+                  <div class="task-progress-bar" style="width: 90%"></div>
+                </div>
+              </div>
+              <div class="task-status status-done">Done</div>
+            </div>
+            
+            <div class="task-item">
+              <div class="task-icon">
+                <i class="fas fa-palette"></i>
+              </div>
+              <div class="task-content">
+                <div class="task-title">Brand Identity Design</div>
+                <div class="task-progress">
+                  <div class="task-progress-bar" style="width: 25%"></div>
+                </div>
+              </div>
+              <div class="task-status status-new">New</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section Title -->
+        <h2 class="section-title">Human-in-the-Loop Automation Metrics</h2>
+        
+        <!-- Intervention Metrics -->
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Total Interventions</div>
+            <div class="card-icon">
+              <i class="fas fa-hand-paper"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">50</div>
+            <div class="trend">
+              <i class="fas fa-calendar"></i> Last 30 days
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Override Rate</div>
+            <div class="card-icon">
+              <i class="fas fa-sync-alt"></i>
+            </div>
+          </div>
+          <div class="metric-container">
+            <div class="metric-value">5%</div>
+            <div class="trend up">
+              <i class="fas fa-check"></i> Low intervention
+            </div>
+          </div>
+        </div>
+        
+        <div class="card span-4">
+          <div class="card-header">
+            <div class="card-title">Common Intervention Areas</div>
+            <div class="card-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+          </div>
+          <div class="tag-container">
+            <span class="tag">Area A</span>
+            <span class="tag">Area B</span>
+            <span class="tag">Area C</span>
+            <span class="tag">Area D</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Toggle sidebar
+    document.querySelector('.toggle-btn').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+    });
+    
+    // Toggle sub-menus
+    document.querySelectorAll('.menu-item').forEach(item => {
+      if (item.querySelector('.sub-menu')) {
+        item.addEventListener('click', function(e) {
+          if (!e.target.closest('.sub-item')) {
+            this.classList.toggle('expanded');
+          }
+        });
       }
     });
-    new Chart(document.getElementById('rcaChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-        datasets: [{
-          label: 'RCA %',
-          data: [65, 75, 85, 92],
-          backgroundColor: '#22d3ee'
-        }]
-      }
+    
+    // Set needle positions for gauges
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set efficiency needle (85%)
+      const efficiencyNeedle = document.getElementById('efficiency-needle');
+      const efficiencyAngle = (85 / 100) * 180 - 90; // 0-100% to 0-180 degrees
+      efficiencyNeedle.style.transform = `translateX(-50%) rotate(${efficiencyAngle}deg)`;
+      
+      // Set RCA needle (92%)
+      const rcaNeedle = document.getElementById('rca-needle');
+      const rcaAngle = (92 / 100) * 180 - 90;
+      rcaNeedle.style.transform = `translateX(-50%) rotate(${rcaAngle}deg)`;
+      
+      // Animate progress bars
+      document.querySelectorAll('.progress-fill').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+          bar.style.transition = 'width 1s ease';
+          bar.style.width = width;
+        }, 300);
+      });
+      
+      // Animate task progress bars
+      document.querySelectorAll('.task-progress-bar').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+          bar.style.transition = 'width 1s ease';
+          bar.style.width = width;
+        }, 500);
+      });
+      
+      // Animate assignee progress bars
+      document.querySelectorAll('.assignee-progress').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+          bar.style.transition = 'width 1s ease';
+          bar.style.width = width;
+        }, 700);
+      });
+      
+      // Animation for cards
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
+        }, 100);
+      });
+      
+      // Animation for task items
+      const tasks = document.querySelectorAll('.task-item');
+      tasks.forEach((task, index) => {
+        setTimeout(() => {
+          task.style.opacity = '0';
+          task.style.transform = 'translateX(20px)';
+          setTimeout(() => {
+            task.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            task.style.opacity = '1';
+            task.style.transform = 'translateX(0)';
+          }, index * 200);
+        }, 500);
+      });
+      
+      // Animate trend lines
+      setTimeout(() => {
+        document.getElementById('auto-trend').style.clipPath = 'polygon(0% 100%, 0% 20%, 25% 35%, 50% 50%, 75% 65%, 100% 80%, 100% 100%)';
+        document.getElementById('manual-trend').style.clipPath = 'polygon(0% 100%, 0% 80%, 25% 65%, 50% 50%, 75% 35%, 100% 20%, 100% 100%)';
+        
+        // Animate SVG paths
+        document.querySelectorAll('.trend-path').forEach(path => {
+          path.style.strokeDashoffset = '0';
+        });
+      }, 1000);
     });
-  new Chart(document.getElementById('rcaCompare'), {
-  type: 'bar',
-  data: {
-    labels: ['Auto RCA', 'Manual RCA'],
-    datasets: [{
-      label: 'Success Rate',
-      data: [90, 65],
-      backgroundColor: ['#34d399', '#facc15']
-    }]
-  }
-});
-new Chart(document.getElementById('mttrChart'), {
-  type: 'line',
-  data: {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-    datasets: [
-      {
-        label: 'Automated',
-        data: [5, 4, 4, 3],
-        borderColor: '#10b981',
-        fill: false
-      },
-      {
-        label: 'Manual',
-        data: [9, 8, 8, 7],
-        borderColor: '#ef4444',
-        fill: false
-      }
-    ]
-  }
-});
-</script>
+  </script>
 </body>
 </html>
